@@ -1,0 +1,21 @@
+.modal {
+    /* 모달창 크기 */
+    max-width: 85%;
+    max-height: 70%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.screen-box {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.screen-box::-webkit-scrollbar {
+    display: none
+        /* Chrome , Safari , Opera */
+}
