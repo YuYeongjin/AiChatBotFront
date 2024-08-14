@@ -3,6 +3,7 @@ import './App.css';
 import React, { useState } from 'react';
 import WordDashboard from './component/word';
 import ChatDashboard from './component/chat';
+import { Button } from "@chakra-ui/react";
 
 
 function App() {
@@ -23,18 +24,21 @@ function App() {
 
               <flex style={{ width: '50vw' }}>
 
-                <button style={{ width: '50%' }}
+                <Button style={{ width: '50%' }}
+                  backgroundColor='green.400'
+                  color='white'
                   onClick={() => setMainComponent('word')}
                 >
                   단어장
-                </button>
+                </Button>
 
-                <button style={{ width: '50%' }}
-                  onClick={() => setMainComponent('chat')}
-
+                <Button style={{ width: '50%' }}
+                  backgroundColor='gray.400'
+                  color='white'
+                // onClick={() => setMainComponent('chat')}
                 >
-                  챗봇
-                </button>
+                  챗봇 (개발중)
+                </Button>
 
 
               </flex>

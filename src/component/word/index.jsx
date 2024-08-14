@@ -2,17 +2,24 @@
 import React, { useState, useEffect } from "react";
 // External Libraries
 import axios from 'axios';
-import { Button, Card, Input, Text, Flex, Box } from "@chakra-ui/react";
+import { Button, Card, Input, Text, Flex, Box, Icon, IconButton } from "@chakra-ui/react";
+import ExcelModal from "./modal/ExcelModal";
+import { BsFillPencilFill, BsFillXOctagonFill } from "react-icons/bs";
+
 
 export default function WordDashboard({ }) {
   const [wordList, setWordList] = useState([]);
   const [excelModal, setExcelModal] = useState(false);
   const [changeWord, setChangeWord] = useState(false);
+  const [wordUpdateOn, setWordUpdateOn] = useState(false);
+  const [wordInfo, setWordInfo] = useState();
   const [inputs, setInputs] = useState({
     word: "",
-    mean: ""
+    mean: "",
+    updateWord: "",
+    updateMean: "",
   });
-  const { word, mean } = inputs;
+  const { word, mean, updateWord, updateMean } = inputs;
 
   // When the user enters data, the value is changed to the entered value.      
   function onChange(e) {
@@ -28,6 +35,7 @@ export default function WordDashboard({ }) {
       .then((response) => {
         for (var i = 0; i < response.data.wordList.length; i++) {
           list.push({
+            "id": response.data.wordList[i].id,
             "word": response.data.wordList[i].word,
             "mean": response.data.wordList[i].mean
           })
@@ -58,14 +66,33 @@ export default function WordDashboard({ }) {
     }
   }
 
+  function updateOn() {
+    setWordUpdateOn(true);
+  }
 
-
+  function deleteWord(word) {
+    alert(word);
+    axios.post("/api/word/delete", {
+      id: word.id
+    }).then((response) => {
+      setChangeWord(true);
+    })
+      .catch((error) => {
+        alert(error);
+      })
+  }
+  function cancelUpdate() {
+    setWordUpdateOn(false);
+    setWordInfo();
+  }
 
   return (
 
     <>
+      {excelModal && <ExcelModal setChangeWord={setChangeWord} onClose={() => setExcelModal(false)} />}
+
       <div style={{ display: 'flex' }}>
-        <div>
+        <div style={{ width: '50vw' }}>
           <Flex my='10px' justify='space-evenly'>
             <Text fontSize='17px'>
               단어장
@@ -107,18 +134,66 @@ export default function WordDashboard({ }) {
             {
               wordList && wordList.length > 0 ? (
                 wordList.map((word, index) => (
-                  <div
+                  <Flex
                     style={{ color: 'black', display: 'flex', width: "100%", justifyContent: 'space-around' }}
                     key={index}
+                    align='center'
                   >
-                    <p>단어: {word.word}</p>
-                    <p>의미: {word.mean}</p>
-                  </div>
+                    {
+                      wordInfo && wordInfo.id === word.id ?
+                        <>
+                          <Input
+                            mx='10px'
+                            id='updateWord'
+                            name='updateWord'
+                            value={updateWord}
+                            autoComplete='false'
+                            onChange={(e) => onChange(e)}
+                            placeholder={word.word}
+                          />
+                          <Input
+                            mx='10px'
+                            id='updateMean'
+                            name='updateMean'
+                            value={updateMean}
+                            autoComplete='false'
+                            onChange={(e) => onChange(e)}
+                            placeholder={word.mean}
+                          />
+                          <Button >
+                            저장
+                          </Button>
+                          <Button
+                            onClick={() => cancelUpdate()}
+                          >
+                            취소
+                          </Button>
+                        </>
+                        :
+                        <>
+                          <Text>{word.word}</Text>
+                          <Text>{word.mean}</Text>
+                          <IconButton as={BsFillPencilFill} color='green'
+                            size='100%'
+                            onClick={() => {
+                              setWordInfo(word);
+                              updateOn();
+                            }} />
+                          <IconButton as={BsFillXOctagonFill} color='red'
+                            size='100%'
+                            onClick={() => {
+                              setWordInfo(word);
+                              deleteWord(word);
+                            }}
+                          />
+                        </>
+                    }
+                  </Flex>
                 ))
               ) : (
-                <p style={{ color: 'black' }}>
+                <Text style={{ color: 'black' }}>
                   단어를 추가하세요.
-                </p>
+                </Text>
               )
             }
 
@@ -127,7 +202,7 @@ export default function WordDashboard({ }) {
             position='fixed'
             bottom='5%'
             left='1%'
-            width='50%'
+            width='48%'
           >
             <Button backgroundColor='blue.200' color='white'>
               무작위 문제 생성
@@ -145,7 +220,7 @@ export default function WordDashboard({ }) {
         <Flex direction='column' width='50vw' height='100vh' backgroundColor='gray.200'>
           <Box width='100%' borderBottom='1px solid'>
             <Text mt='20px' align='center'>
-              단어시험
+              영어 단어시험
             </Text>
           </Box>
 
