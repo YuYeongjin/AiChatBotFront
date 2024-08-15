@@ -2,24 +2,36 @@
 import React, { useState, useEffect } from "react";
 // External Libraries
 import axios from 'axios';
-import { Button, Card, Input, Text, Flex, Box, Icon, IconButton } from "@chakra-ui/react";
+import { Button, Card, Input, Text, Flex, Box, IconButton } from "@chakra-ui/react";
 import ExcelModal from "./modal/ExcelModal";
 import { BsFillPencilFill, BsFillXOctagonFill } from "react-icons/bs";
 
 
 export default function WordDashboard({ }) {
-  const [wordList, setWordList] = useState([]);
+  //  modal
   const [excelModal, setExcelModal] = useState(false);
+  const [problemModal, setProblemModal] = useState(false);
+
+  // status 
   const [changeWord, setChangeWord] = useState(false);
-  const [wordUpdateOn, setWordUpdateOn] = useState(false);
+  const [createFinish, setCreateFinish] = useState(false);
+  const [original, setOriginal] = useState(true);
+
+  // valuable
+  const [wordList, setWordList] = useState([]);
   const [wordInfo, setWordInfo] = useState();
+  const [problemList, setProblemList] = useState([]);
+  const [ownList, setOwnList] = useState([]);
+
   const [inputs, setInputs] = useState({
     word: "",
     mean: "",
     updateWord: "",
     updateMean: "",
+    amount: "",
+    name: ""
   });
-  const { word, mean, updateWord, updateMean } = inputs;
+  const { word, mean, updateWord, updateMean, amount, name } = inputs;
 
   // When the user enters data, the value is changed to the entered value.      
   function onChange(e) {
@@ -28,6 +40,9 @@ export default function WordDashboard({ }) {
       ...inputs,
       [name]: value,
     });
+    if (name === 'amount') {
+      setCreateFinish(false);
+    }
   }
   useEffect(() => {
     var list = [];
@@ -41,6 +56,9 @@ export default function WordDashboard({ }) {
           })
           setWordList(list);
         }
+      })
+      .catch((error) => {
+        setWordList(list);
       })
     if (changeWord) {
       setChangeWord(false);
@@ -66,10 +84,6 @@ export default function WordDashboard({ }) {
     }
   }
 
-  function updateOn() {
-    setWordUpdateOn(true);
-  }
-
   function deleteWord(word) {
     alert(word);
     axios.post("/api/word/delete", {
@@ -82,15 +96,79 @@ export default function WordDashboard({ }) {
       })
   }
   function cancelUpdate() {
-    setWordUpdateOn(false);
     setWordInfo();
+  }
+
+  function createProblem() {
+    var list = [];
+    axios.post("/api/word/createProblem", {
+      amount: amount
+    }).then((response) => {
+      for (var i = 0; i < response.data.wordList.length; i++) {
+        list.push({
+          "id": response.data.wordList[i].id,
+          "word": response.data.wordList[i].word,
+          "mean": response.data.wordList[i].mean
+        })
+        setOwnList(list);
+        setCreateFinish(true);
+      }
+    })
+      .catch((error) => {
+        alert(error);
+      })
+  }
+
+  function updateWordMethod(word) {
+    axios.post("/api/word/createProblem", {
+      id: word.id,
+      word: updateWord,
+      mean: updateMean
+    }).then((response) => {
+      setChangeWord(true);
+    })
+      .catch((error) => {
+        alert(error);
+      })
+  }
+
+  function hideMean() {
+    var list = [];
+    ownList.forEach(element => {
+      list.push({
+        'id': element.id,
+        'mean': '',
+        'word': element.word
+      })
+    });
+
+    setProblemList(list);
+    setOriginal(false);
+  }
+
+  function hideWord() {
+    var list = [];
+    ownList.forEach(element => {
+      list.push({
+        'id': element.id,
+        'mean': element.mean,
+        'word': ''
+      })
+    });
+
+    setProblemList(list);
+    setOriginal(false);
+  }
+
+  function retry() {
+    setOriginal(true);
+    setCreateFinish(false);
   }
 
   return (
 
     <>
       {excelModal && <ExcelModal setChangeWord={setChangeWord} onClose={() => setExcelModal(false)} />}
-
       <div style={{ display: 'flex' }}>
         <div style={{ width: '50vw' }}>
           <Flex my='10px' justify='space-evenly'>
@@ -160,7 +238,7 @@ export default function WordDashboard({ }) {
                             onChange={(e) => onChange(e)}
                             placeholder={word.mean}
                           />
-                          <Button >
+                          <Button onClick={() => updateWordMethod(word)}>
                             저장
                           </Button>
                           <Button
@@ -171,13 +249,16 @@ export default function WordDashboard({ }) {
                         </>
                         :
                         <>
-                          <Text>{word.word}</Text>
-                          <Text>{word.mean}</Text>
+                          <Text style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {word.word}
+                          </Text>
+                          <Text style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {word.mean}
+                          </Text>
                           <IconButton as={BsFillPencilFill} color='green'
                             size='100%'
                             onClick={() => {
                               setWordInfo(word);
-                              updateOn();
                             }} />
                           <IconButton as={BsFillXOctagonFill} color='red'
                             size='100%'
@@ -203,16 +284,65 @@ export default function WordDashboard({ }) {
             bottom='5%'
             left='1%'
             width='48%'
+            direction='column'
           >
-            <Button backgroundColor='blue.200' color='white'>
-              무작위 문제 생성
-            </Button>
-            <Button backgroundColor='blue.200' color='white'>
-              단어 가리기
-            </Button>
-            <Button backgroundColor='blue.200' color='white'>
-              뜻 가리기
-            </Button>
+            {
+              problemModal ?
+                <>
+                  <Flex>
+                    <Input
+                      id='name'
+                      name='name'
+                      value={name}
+                      autoComplete='false'
+                      placeholder='시험지 제목'
+                      onChange={(e) => onChange(e)}
+                    />
+                    <Input
+                      id='amount'
+                      name='amount'
+                      value={amount}
+                      autoComplete='false'
+                      placeholder='몇 문제를 만들까요?'
+                      onChange={(e) => onChange(e)}
+                    />
+                  </Flex>
+                  {
+                    createFinish ?
+                      <>
+                        <Flex justify='space-evenly'>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => setOriginal(true)}>
+                            원본
+                          </Button>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => hideMean()}>
+                            단어 가리기
+                          </Button>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => hideWord()}>
+                            뜻 가리기
+                          </Button>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => retry()}>
+                            다시 생성하기
+                          </Button>
+                        </Flex>
+                        <Flex>
+                          <Button backgroundColor='blue.200' color='white'>
+                            저장하기
+                          </Button>
+                        </Flex>
+                      </>
+                      :
+                      <Button backgroundColor='blue.200' color='white' onClick={() => createProblem()}>
+                        생성하기
+                      </Button>
+                  }
+                </>
+                :
+                <>
+                  <Button backgroundColor='blue.200' color='white' onClick={() => setProblemModal(true)}>
+                    무작위 문제 생성
+                  </Button>
+                </>
+            }
           </Flex>
         </div>
 
@@ -223,7 +353,84 @@ export default function WordDashboard({ }) {
               영어 단어시험
             </Text>
           </Box>
+          <Flex
+            direction='column'
+          >
+            <Flex justify='space-between'>
+              <Flex align='center' width='200px' height='50px' border='1px solid black'>
+                <Box borderRight='1px solid black' width='50%' height='100%' >
+                  <Text height='100%' align='center' p='10px'>
+                    이름
+                  </Text>
+                </Box>
+                <Text>
 
+                </Text>
+              </Flex>
+
+              <Flex align='center' width='200px' height='50px' border='1px solid black'>
+                <Box borderRight='1px solid black' width='50%' height='100%'>
+                  <Text height='100%' align='center' p='10px'>
+                    점수
+                  </Text>
+                </Box>
+                <Text>
+
+                </Text>
+              </Flex>
+            </Flex>
+
+            <Text mx='auto' my='20px'>
+              {name}
+            </Text>
+            {
+              !original && problemList ?
+
+                problemList.map((index, problem) => {
+                  <Card
+                    borderBottom='1px solid gray'
+                    key={index}
+                  >
+                    <Flex>
+                      <Text>
+                        {index}
+                      </Text>
+                      <Text>
+                        {problem.word}
+                      </Text>
+                      <Text>
+                        {problem.mean}
+                      </Text>
+                    </Flex>
+
+                  </Card>
+                })
+
+                :
+                original ?
+                  ownList.map((index, problem) => {
+                    <Card
+                      borderBottom='1px solid gray'
+                      key={index}
+                    >
+                      <Flex>
+                        <Text>
+                          {index}
+                        </Text>
+                        <Text>
+                          {problem.word}
+                        </Text>
+                        <Text>
+                          {problem.mean}
+                        </Text>
+                      </Flex>
+
+                    </Card>
+                  })
+                  :
+                  null
+            }
+          </Flex>
 
         </Flex>
 
