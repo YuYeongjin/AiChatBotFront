@@ -129,7 +129,7 @@ export default function WordDashboard({ }) {
     })
       .catch((error) => {
         alert(error);
-      })
+    })
   }
 
   function hideMean() {
