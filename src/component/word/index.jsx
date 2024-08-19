@@ -85,7 +85,6 @@ export default function WordDashboard({ }) {
   }
 
   function deleteWord(word) {
-    alert(word);
     axios.post("/api/word/delete", {
       id: word.id
     }).then((response) => {
@@ -110,9 +109,9 @@ export default function WordDashboard({ }) {
           "word": response.data.wordList[i].word,
           "mean": response.data.wordList[i].mean
         })
-        setOwnList(list);
-        setCreateFinish(true);
       }
+      setOwnList(list);
+      setCreateFinish(true);
     })
       .catch((error) => {
         alert(error);
@@ -120,16 +119,17 @@ export default function WordDashboard({ }) {
   }
 
   function updateWordMethod(word) {
-    axios.post("/api/word/createProblem", {
+    axios.post("/api/word/updateWord", {
       id: word.id,
       word: updateWord,
       mean: updateMean
     }).then((response) => {
       setChangeWord(true);
+      setWordInfo();
     })
       .catch((error) => {
         alert(error);
-    })
+      })
   }
 
   function hideMean() {
@@ -311,7 +311,7 @@ export default function WordDashboard({ }) {
                     createFinish ?
                       <>
                         <Flex justify='space-evenly'>
-                          <Button backgroundColor='blue.200' color='white' onClick={() => setOriginal(true)}>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => setProblemList([])}>
                             원본
                           </Button>
                           <Button backgroundColor='blue.200' color='white' onClick={() => hideMean()}>
@@ -384,51 +384,60 @@ export default function WordDashboard({ }) {
               {name}
             </Text>
             {
-              !original && problemList ?
-
-                problemList.map((index, problem) => {
-                  <Card
+              problemList && problemList.length > 0 ?
+                problemList.map((problem, index) => (
+                  <Box
                     borderBottom='1px solid gray'
                     key={index}
                   >
-                    <Flex>
+                    <Flex justify='space-around'>
                       <Text>
                         {index}
                       </Text>
                       <Text>
-                        {problem.word}
+                        {problem.word ?
+                          problem.word
+                          :
+                          "          "
+                        }
                       </Text>
                       <Text>
-                        {problem.mean}
+                        {problem.mean ?
+                          problem.mean
+                          :
+                          "          "
+                        }
                       </Text>
                     </Flex>
 
-                  </Card>
-                })
+                  </Box>
+                ))
 
                 :
-                original ?
-                  ownList.map((index, problem) => {
+                ownList && ownList.length > 0 ?
+                  ownList.map((originWord, index) => (
                     <Card
                       borderBottom='1px solid gray'
                       key={index}
                     >
-                      <Flex>
+                      <Flex justify='space-around'>
                         <Text>
                           {index}
                         </Text>
                         <Text>
-                          {problem.word}
+                          {originWord.word}
                         </Text>
                         <Text>
-                          {problem.mean}
+                          {originWord.mean}
                         </Text>
                       </Flex>
 
                     </Card>
-                  })
+                  ))
                   :
-                  null
+                  <Text>
+                    {ownList.length}
+                  </Text>
             }
           </Flex>
 
