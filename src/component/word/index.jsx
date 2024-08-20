@@ -1,11 +1,11 @@
 // React
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // External Libraries
 import axios from 'axios';
 import { Button, Card, Input, Text, Flex, Box, IconButton } from "@chakra-ui/react";
 import ExcelModal from "./modal/ExcelModal";
 import { BsFillPencilFill, BsFillXOctagonFill } from "react-icons/bs";
-
+import html2canvas from 'html2canvas';
 
 export default function WordDashboard({ }) {
   //  modal
@@ -165,6 +165,39 @@ export default function WordDashboard({ }) {
     setCreateFinish(false);
   }
 
+  const captureRef = useRef();
+  function captureProblem() {
+    html2canvas(captureRef.current).then(canvas => {
+
+      axios.post('/api/word/saveList', {
+        ownList: ownList,
+        name: name
+      })
+        .then((response) => {
+          if (response.data.status === '1') {
+            alert("저장 완료!");
+          }
+
+          if (response.data.status === '0') {
+            alert(response.data.error);
+          }
+        })
+        .catch((error) => {
+          alert(error);
+        })
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name + '.png'; // 저장할 파일 이름
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url); // 메모리 해제
+      });
+    });
+  }
+
   return (
 
     <>
@@ -283,7 +316,7 @@ export default function WordDashboard({ }) {
             position='fixed'
             bottom='5%'
             left='1%'
-            width='48%'
+            // width='100%'
             direction='column'
           >
             {
@@ -325,7 +358,7 @@ export default function WordDashboard({ }) {
                           </Button>
                         </Flex>
                         <Flex>
-                          <Button backgroundColor='blue.200' color='white'>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => captureProblem()}>
                             저장하기
                           </Button>
                         </Flex>
@@ -347,9 +380,10 @@ export default function WordDashboard({ }) {
         </div>
 
 
-        <Flex direction='column' width='50vw' height='100vh' backgroundColor='gray.200'>
+        <Flex ref={captureRef} direction='column' width="793.7px"
+          height="1122.52px" backgroundColor='gray.200'>
           <Box width='100%' borderBottom='1px solid'>
-            <Text mt='20px' align='center'>
+            <Text my='10px' align='center'>
               영어 단어시험
             </Text>
           </Box>
@@ -387,25 +421,24 @@ export default function WordDashboard({ }) {
               problemList && problemList.length > 0 ?
                 problemList.map((problem, index) => (
                   <Box
-                    borderBottom='1px solid gray'
                     key={index}
                   >
                     <Flex justify='space-around'>
                       <Text>
                         {index}
                       </Text>
-                      <Text>
+                      <Text borderBottom={problem.word ? 'none' : '1px solid black'}>
                         {problem.word ?
                           problem.word
                           :
-                          "          "
+                          "　　　　　　　"
                         }
                       </Text>
-                      <Text>
+                      <Text borderBottom={problem.mean ? 'none' : '1px solid black'}>
                         {problem.mean ?
                           problem.mean
                           :
-                          "          "
+                          "　　　　　　　"
                         }
                       </Text>
                     </Flex>
@@ -416,8 +449,7 @@ export default function WordDashboard({ }) {
                 :
                 ownList && ownList.length > 0 ?
                   ownList.map((originWord, index) => (
-                    <Card
-                      borderBottom='1px solid gray'
+                    <Box
                       key={index}
                     >
                       <Flex justify='space-around'>
@@ -432,7 +464,7 @@ export default function WordDashboard({ }) {
                         </Text>
                       </Flex>
 
-                    </Card>
+                    </Box>
                   ))
                   :
                   <Text>
@@ -443,7 +475,7 @@ export default function WordDashboard({ }) {
 
         </Flex>
 
-      </div>
+      </div >
     </>
 
   );
