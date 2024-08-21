@@ -7,7 +7,7 @@ import ExcelModal from "./modal/ExcelModal";
 import { BsFillPencilFill, BsFillXOctagonFill } from "react-icons/bs";
 import html2canvas from 'html2canvas';
 
-export default function WordDashboard({ }) {
+export default function WordDashboard() {
   //  modal
   const [excelModal, setExcelModal] = useState(false);
   const [problemModal, setProblemModal] = useState(false);
@@ -15,7 +15,6 @@ export default function WordDashboard({ }) {
   // status 
   const [changeWord, setChangeWord] = useState(false);
   const [createFinish, setCreateFinish] = useState(false);
-  const [original, setOriginal] = useState(true);
 
   // valuable
   const [wordList, setWordList] = useState([]);
@@ -143,7 +142,6 @@ export default function WordDashboard({ }) {
     });
 
     setProblemList(list);
-    setOriginal(false);
   }
 
   function hideWord() {
@@ -157,11 +155,9 @@ export default function WordDashboard({ }) {
     });
 
     setProblemList(list);
-    setOriginal(false);
   }
 
   function retry() {
-    setOriginal(true);
     setCreateFinish(false);
   }
 

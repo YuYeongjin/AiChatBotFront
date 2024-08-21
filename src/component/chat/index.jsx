@@ -1,11 +1,11 @@
 // React
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 // External Libraries
 import axios from 'axios';
 import { Box, Flex, Image, Button } from "@chakra-ui/react";
 // Components
 
-export default function ChatDashboard({ setViewComponent }) {
+export default function ChatDashboard() {
   const [inputs, setInputs] = useState({
     chat: "",
     word: "",
