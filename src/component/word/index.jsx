@@ -21,6 +21,7 @@ export default function WordDashboard() {
   const [wordInfo, setWordInfo] = useState();
   const [problemList, setProblemList] = useState([]);
   const [ownList, setOwnList] = useState([]);
+  const [saveWordList, setSaveWordList] = useState([]);
 
   const [inputs, setInputs] = useState({
     word: "",
@@ -45,6 +46,7 @@ export default function WordDashboard() {
   }
   useEffect(() => {
     var list = [];
+    var word = [];
     axios.post("/api/word/getAll")
       .then((response) => {
         for (var i = 0; i < response.data.wordList.length; i++) {
@@ -59,6 +61,24 @@ export default function WordDashboard() {
       .catch((error) => {
         setWordList(list);
       })
+
+    axios.post("/api/word/totalWordList")
+      .then((response) => {
+        for (var i = 0; i < response.data.wordLists.length; i++) {
+          console.log(response.data.wordLists[i]);
+          word.push({
+            "id": response.data.wordLists[i].id,
+            "wordList": response.data.wordLists[i].wordLists,
+            "name": response.data.wordLists[i].name,
+            "createdAt": response.data.wordLists[i].createdAt
+          })
+          setSaveWordList(word);
+        }
+      })
+      .catch((error) => {
+        setSaveWordList(word);
+      })
+
     if (changeWord) {
       setChangeWord(false);
     }
@@ -172,6 +192,7 @@ export default function WordDashboard() {
         .then((response) => {
           if (response.data.status === '1') {
             alert("저장 완료!");
+            setChangeWord(true);
           }
 
           if (response.data.status === '0') {
@@ -308,6 +329,30 @@ export default function WordDashboard() {
             }
 
           </Flex>
+          {
+            saveWordList.length > 0 ?
+              saveWordList.map((list, index) => (
+                <Box
+                  key={index}
+                >
+                  <Flex justify='space-around'>
+                    <Text>
+                      {index}
+                    </Text>
+                    <Text>
+                      {list.name}
+                    </Text>
+                    <Text>
+                      {(list.createdAt).replace('T', ' ').substring(0, 19)}
+                    </Text>
+                  </Flex>
+                </Box>
+              ))
+              :
+              <Text>
+                저장된 리스트가 없습니다.
+              </Text>
+          }
           <Flex align='center' border='1px solid' borderColor='blue.200' justify='space-evenly'
             position='fixed'
             bottom='5%'
