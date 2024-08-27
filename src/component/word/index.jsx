@@ -11,7 +11,6 @@ export default function WordDashboard() {
   //  modal
   const [excelModal, setExcelModal] = useState(false);
   const [problemModal, setProblemModal] = useState(false);
-
   // status 
   const [changeWord, setChangeWord] = useState(false);
   const [createFinish, setCreateFinish] = useState(false);
@@ -22,6 +21,7 @@ export default function WordDashboard() {
   const [problemList, setProblemList] = useState([]);
   const [ownList, setOwnList] = useState([]);
   const [saveWordList, setSaveWordList] = useState([]);
+  const [saveWordInfo, setSaveWordInfo] = useState();
 
   const [inputs, setInputs] = useState({
     word: "",
@@ -65,10 +65,9 @@ export default function WordDashboard() {
     axios.post("/api/word/totalWordList")
       .then((response) => {
         for (var i = 0; i < response.data.wordLists.length; i++) {
-          console.log(response.data.wordLists[i]);
           word.push({
             "id": response.data.wordLists[i].id,
-            "wordList": response.data.wordLists[i].wordLists,
+            "wordList": response.data.wordLists[i].wordList,
             "name": response.data.wordLists[i].name,
             "createdAt": response.data.wordLists[i].createdAt
           })
@@ -215,6 +214,33 @@ export default function WordDashboard() {
     });
   }
 
+  function saveReview(saveWords) {
+    const jsonData = saveWords.wordList
+      .replace(/(\{|\[|\}|\,)\s*([a-zA-Z0-9_]+)\s*=/g, '$1"$2":')
+      .replace(/:\s*([^",}\]]+?)(?=,|\}|$)/g, ': "$1"')
+      .replace(/=(?=[^\"])/g, ':');
+
+    const parsedData = JSON.parse(jsonData);
+
+    // todo 
+    // 이름, 클릭시 바로 저장하기가 가능하게
+
+    const list = [];
+    for (var i = 0; i < parsedData.length; i++) {
+      list.push({
+        "id": parsedData[i].id,
+        "word": parsedData[i].word,
+        "mean": parsedData[i].mean
+      });
+    }
+
+    setOwnList(list);
+    setCreateFinish(true);
+  }
+
+
+
+
   return (
 
     <>
@@ -225,7 +251,7 @@ export default function WordDashboard() {
             <Text fontSize='17px'>
               단어장
             </Text>
-            <Button width='30%' height='30px' my='auto' backgroundColor='green.300' color='white' onClick={() => setExcelModal(true)}>
+            <Button height='30px' my='auto' backgroundColor='green.300' color='white' onClick={() => setExcelModal(true)}>
               엑셀자료로 넣기
             </Button>
           </Flex>
@@ -334,6 +360,9 @@ export default function WordDashboard() {
               saveWordList.map((list, index) => (
                 <Box
                   key={index}
+                  onClick={() => {
+                    saveReview(list);
+                  }}
                 >
                   <Flex justify='space-around'>
                     <Text>
@@ -421,8 +450,11 @@ export default function WordDashboard() {
         </div>
 
 
-        <Flex ref={captureRef} direction='column' width="793.7px"
-          height="1122.52px" backgroundColor='gray.200'>
+        <Flex ref={captureRef} direction='column'
+          width="793.7px"
+          height="1122.52px"
+          border='1px solid gray'
+          overflowY='auto'>
           <Box width='100%' borderBottom='1px solid'>
             <Text my='10px' align='center'>
               영어 단어시험
@@ -432,9 +464,9 @@ export default function WordDashboard() {
             direction='column'
           >
             <Flex justify='space-between'>
-              <Flex align='center' width='200px' height='50px' border='1px solid black'>
+              <Flex align='center' width='200px' height='40px' borderLeft='1px solid black' borderRight='1px solid black' borderBottom='1px solid black'>
                 <Box borderRight='1px solid black' width='50%' height='100%' >
-                  <Text height='100%' align='center' p='10px'>
+                  <Text height='100%' align='center'>
                     이름
                   </Text>
                 </Box>
@@ -443,9 +475,9 @@ export default function WordDashboard() {
                 </Text>
               </Flex>
 
-              <Flex align='center' width='200px' height='50px' border='1px solid black'>
+              <Flex align='center' width='200px' height='40px' borderLeft='1px solid black' borderRight='1px solid black' borderBottom='1px solid black'>
                 <Box borderRight='1px solid black' width='50%' height='100%'>
-                  <Text height='100%' align='center' p='10px'>
+                  <Text height='100%' align='center' >
                     점수
                   </Text>
                 </Box>
@@ -459,61 +491,120 @@ export default function WordDashboard() {
               {name}
             </Text>
             {
-              problemList && problemList.length > 0 ?
-                problemList.map((problem, index) => (
-                  <Box
-                    key={index}
-                  >
-                    <Flex justify='space-around'>
-                      <Text>
-                        {index}
-                      </Text>
-                      <Text borderBottom={problem.word ? 'none' : '1px solid black'}>
-                        {problem.word ?
-                          problem.word
-                          :
-                          "　　　　　　　"
-                        }
-                      </Text>
-                      <Text borderBottom={problem.mean ? 'none' : '1px solid black'}>
-                        {problem.mean ?
-                          problem.mean
-                          :
-                          "　　　　　　　"
-                        }
-                      </Text>
-                    </Flex>
-
-                  </Box>
-                ))
-
-                :
-                ownList && ownList.length > 0 ?
-                  ownList.map((originWord, index) => (
+              problemList && problemList.length > 30 ?
+                <Flex wrap="wrap" justify="space-around">
+                  {problemList.map((problem, index) => (
                     <Box
                       key={index}
+                      width="45%" // 한 열에 2개의 항목이 들어가도록 설정
+                      mb="2px"
+                    >
+                      <Flex justify="space-between">
+                        <Text width='20%' align='left'>
+                          {index + 1}
+                        </Text>
+                        <Text borderBottom={problem.word ? 'none' : '1px solid black'} width='40%' align='left'>
+                          {problem.word ?
+                            problem.word
+                            :
+                            "　　　　　"
+                          }
+                        </Text>
+                        <Text borderBottom={problem.mean ? 'none' : '1px solid black'} width='40%' align='right'>
+                          {problem.mean ?
+                            problem.mean
+                            :
+                            "　　　　　"
+                          }
+                        </Text>
+                      </Flex>
+                    </Box>
+                  ))}
+                </Flex>
+                :
+                problemList && problemList.length > 0 ?
+                  problemList.map((problem, index) => (
+                    <Box
+                      key={index}
+                      mb="2px"
                     >
                       <Flex justify='space-around'>
-                        <Text>
-                          {index}
+                        <Text width='20%' align='left' ml='10px'>
+                          {index + 1}
                         </Text>
-                        <Text>
-                          {originWord.word}
+                        <Text borderBottom={problem.word ? 'none' : '1px solid black'} width='40%' align='left'>
+                          {problem.word ?
+                            problem.word
+                            :
+                            "　　　　　"
+                          }
                         </Text>
-                        <Text>
-                          {originWord.mean}
+                        <Text borderBottom={problem.mean ? 'none' : '1px solid black'} width='40%' align='right'>
+                          {problem.mean ?
+                            problem.mean
+                            :
+                            "　　　　　"
+                          }
                         </Text>
                       </Flex>
 
                     </Box>
                   ))
                   :
-                  <Text>
-                    {ownList.length}
-                  </Text>
+                  ownList && ownList.length > 30 ?
+                    <Flex wrap="wrap" justify="space-around">
+                      {ownList.map((originWord, index) => (
+                        <Box
+                          key={index}
+                          width="45%" // 두 줄로 나누기 위해 각 항목의 너비를 설정합니다.
+                          mb="2px" // 아래 간격(margin-bottom)을 설정합니다.
+                        >
+                          <Flex justify='space-between'>
+                            <Text width='20%' align='left'>
+                              {index + 1}
+                            </Text>
+                            <Text width='40%' align='left'>
+                              {originWord.word}
+                            </Text>
+                            <Text width='40%' align='right'>
+                              {originWord.mean}
+                            </Text>
+                          </Flex>
+                        </Box>
+                      ))}
+                    </Flex>
+                    :
+                    ownList && ownList.length > 0 ?
+                      ownList.map((originWord, index) => (
+                        <Box
+                          key={index}
+                          mb="2px"
+                        >
+                          <Flex justify='space-around'>
+                            <Text width='20%' align='left' ml='10px'>
+                              {index + 1}
+                            </Text>
+                            <Text width='40%' align='left'>
+                              {originWord.word}
+                            </Text>
+                            <Text width='40%' align='right'>
+                              {originWord.mean}
+                            </Text>
+                          </Flex>
+
+                        </Box>
+                      ))
+                      :
+                      <Text>
+                        생성한 문제가 없습니다.
+                      </Text>
             }
           </Flex>
-
+          {/* <Box position='fixed' top='1000px' width="793.7px" borderTop='1px solid gray'>
+            <Text align='center'>
+              
+            </Text>
+          </Box> */}
         </Flex>
 
       </div >
