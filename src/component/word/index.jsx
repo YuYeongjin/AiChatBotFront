@@ -23,6 +23,7 @@ export default function WordDashboard() {
   const [saveWordList, setSaveWordList] = useState([]);
   const [saveWordInfo, setSaveWordInfo] = useState();
 
+  const [btnComponent, setBtnComponent] = useState('');
   const [inputs, setInputs] = useState({
     word: "",
     mean: "",
@@ -97,7 +98,7 @@ export default function WordDashboard() {
         })
       })
         .catch((error) => {
-          alert(error);
+          alert("다시 시도해주세요.");
         })
     }
   }
@@ -109,7 +110,7 @@ export default function WordDashboard() {
       setChangeWord(true);
     })
       .catch((error) => {
-        alert(error);
+        alert("다시 시도해주세요.");
       })
   }
   function cancelUpdate() {
@@ -132,7 +133,7 @@ export default function WordDashboard() {
       setCreateFinish(true);
     })
       .catch((error) => {
-        alert(error);
+        alert("다시 시도해주세요.");
       })
   }
 
@@ -146,7 +147,7 @@ export default function WordDashboard() {
       setWordInfo();
     })
       .catch((error) => {
-        alert(error);
+        alert("다시 시도해주세요.");
       })
   }
 
@@ -199,7 +200,7 @@ export default function WordDashboard() {
           }
         })
         .catch((error) => {
-          alert(error);
+          alert("다시 시도해주세요.");
         })
       canvas.toBlob((blob) => {
         const url = URL.createObjectURL(blob);
@@ -247,7 +248,7 @@ export default function WordDashboard() {
       {excelModal && <ExcelModal setChangeWord={setChangeWord} onClose={() => setExcelModal(false)} />}
       <div style={{ display: 'flex' }}>
         <div style={{ width: '50vw' }}>
-          <Flex my='10px' justify='space-evenly'>
+          <Flex justify='space-evenly' h='10vh' align='center'>
             <Text fontSize='17px'>
               단어장
             </Text>
@@ -256,35 +257,53 @@ export default function WordDashboard() {
             </Button>
           </Flex>
 
-          <Card border='2px solid' borderColor='green.100' width='90%' mx='auto'>
-            <Flex justify='space-evenly' align='center' mb='10px'>
-              <label style={{ marginRight: '8px' }}>Word:</label>
-              <Input
-                mx='10px'
-                id='word'
-                name='word'
-                value={word}
-                autoComplete='false'
-                onChange={(e) => onChange(e)}
-              />
-              <label style={{ marginRight: '8px' }}>Mean:
+          <Card border='2px solid' height='10vh' align='center' borderColor='green.100' width='100%' mx='auto'>
+            {
+              //  TODO Create Brench Function
+              btnComponent === '' ?
+                <Flex justify='space-around'>
+                  <Button>
+                    Insert
+                  </Button>
+                  <Button>
+                    Excel
+                  </Button>
+                  <Button>
+                    Create
+                  </Button>
+                </Flex>
+                :
+                <>
+                  <Flex justify='space-evenly' align='center' mb='10px'>
+                    <label style={{ marginRight: '8px' }}>Word:</label>
+                    <Input
+                      mx='10px'
+                      id='word'
+                      name='word'
+                      value={word}
+                      autoComplete='false'
+                      onChange={(e) => onChange(e)}
+                    />
+                    <label style={{ marginRight: '8px' }}>Mean:
 
-              </label>
-              <Input
-                mx='10px'
-                id='mean'
-                name='mean'
-                value={mean}
-                autoComplete='false'
-                onChange={(e) => onChange(e)}
-              />
-            </Flex>
-            <Button width='100%' backgroundColor='green.200' color='white' onClick={() => saveWord()}>
-              입력
-            </Button>
+                    </label>
+                    <Input
+                      mx='10px'
+                      id='mean'
+                      name='mean'
+                      value={mean}
+                      autoComplete='false'
+                      onChange={(e) => onChange(e)}
+                    />
+                  </Flex>
+                  <Button width='100%' backgroundColor='green.200' color='white' onClick={() => saveWord()}>
+                    입력
+                  </Button>
+                </>
+            }
           </Card>
 
-          <Flex direction='column' maxH='50vh' h='50vh' backgroundColor='green.100' overflowY='auto'>
+          <Flex direction='column' maxH='40vh' h='40vh' backgroundColor='blue.200' overflowY='auto'>
             {
               wordList && wordList.length > 0 ? (
                 wordList.map((word, index) => (
@@ -355,33 +374,39 @@ export default function WordDashboard() {
             }
 
           </Flex>
-          {
-            saveWordList.length > 0 ?
-              saveWordList.map((list, index) => (
-                <Box
-                  key={index}
-                  onClick={() => {
-                    saveReview(list);
-                  }}
-                >
-                  <Flex justify='space-around'>
-                    <Text>
-                      {index}
-                    </Text>
-                    <Text>
-                      {list.name}
-                    </Text>
-                    <Text>
-                      {(list.createdAt).replace('T', ' ').substring(0, 19)}
-                    </Text>
-                  </Flex>
-                </Box>
-              ))
-              :
-              <Text>
-                저장된 리스트가 없습니다.
-              </Text>
-          }
+          <Card
+            direction='column' maxH='40vh' h='40vh' backgroundColor='green.100' overflowY='auto'
+
+          >
+            {
+              saveWordList.length > 0 ?
+                saveWordList.map((list, index) => (
+                  <Box
+                    key={index}
+                    onClick={() => {
+                      saveReview(list);
+                    }}
+                    mb="2px"
+                  >
+                    <Flex justify='space-around'>
+                      <Text>
+                        {index}
+                      </Text>
+                      <Text>
+                        {list.name}
+                      </Text>
+                      <Text>
+                        {(list.createdAt).replace('T', ' ').substring(0, 19)}
+                      </Text>
+                    </Flex>
+                  </Box>
+                ))
+                :
+                <Text>
+                  저장된 리스트가 없습니다.
+                </Text>
+            }
+          </Card>
           <Flex align='center' border='1px solid' borderColor='blue.200' justify='space-evenly'
             position='fixed'
             bottom='5%'
@@ -496,7 +521,7 @@ export default function WordDashboard() {
                   {problemList.map((problem, index) => (
                     <Box
                       key={index}
-                      width="45%" // 한 열에 2개의 항목이 들어가도록 설정
+                      width="45%"
                       mb="2px"
                     >
                       <Flex justify="space-between">
@@ -556,8 +581,8 @@ export default function WordDashboard() {
                       {ownList.map((originWord, index) => (
                         <Box
                           key={index}
-                          width="45%" // 두 줄로 나누기 위해 각 항목의 너비를 설정합니다.
-                          mb="2px" // 아래 간격(margin-bottom)을 설정합니다.
+                          width="45%"
+                          mb="2px"
                         >
                           <Flex justify='space-between'>
                             <Text width='20%' align='left'>
@@ -596,15 +621,10 @@ export default function WordDashboard() {
                       ))
                       :
                       <Text>
-                        생성한 문제가 없습니다.
+                        단어를 넣고 문제를 생성하세요.
                       </Text>
             }
           </Flex>
-          {/* <Box position='fixed' top='1000px' width="793.7px" borderTop='1px solid gray'>
-            <Text align='center'>
-              
-            </Text>
-          </Box> */}
         </Flex>
 
       </div >

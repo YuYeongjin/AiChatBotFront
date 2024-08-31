@@ -72,7 +72,7 @@ export default function ExcelModal({ onClose, setChangeWord }) {
         >
           <Flex
             className='modalMainCloseText'
-            my='10%'
+            my='5%'
             align='center'
             direction='column'
           >
