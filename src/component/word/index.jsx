@@ -239,67 +239,123 @@ export default function WordDashboard() {
     setCreateFinish(true);
   }
 
-
-
-
   return (
 
     <>
       {excelModal && <ExcelModal setChangeWord={setChangeWord} onClose={() => setExcelModal(false)} />}
       <div style={{ display: 'flex' }}>
         <div style={{ width: '50vw' }}>
-          <Flex justify='space-evenly' h='10vh' align='center'>
+          <Flex justify='space-evenly' h='5vh' align='center'>
             <Text fontSize='17px'>
               단어장
             </Text>
-            <Button height='30px' my='auto' backgroundColor='green.300' color='white' onClick={() => setExcelModal(true)}>
-              엑셀자료로 넣기
-            </Button>
+            {
+              btnComponent === '' ?
+                null
+                :
+                <Button my='auto' backgroundColor='green.300' color='white' onClick={() => setBtnComponent('')}>
+                  다른 기능
+                </Button>
+            }
           </Flex>
 
-          <Card border='2px solid' height='10vh' align='center' borderColor='green.100' width='100%' mx='auto'>
+          <Card border='2px solid' height='12vh' mb='3vh' align='center' borderColor='green.100' width='100%' mx='auto'>
             {
-              //  TODO Create Brench Function
-              btnComponent === '' ?
-                <Flex justify='space-around'>
-                  <Button>
-                    Insert
-                  </Button>
-                  <Button>
-                    Excel
-                  </Button>
-                  <Button>
-                    Create
-                  </Button>
-                </Flex>
-                :
+              btnComponent === 'create' ?
                 <>
-                  <Flex justify='space-evenly' align='center' mb='10px'>
-                    <label style={{ marginRight: '8px' }}>Word:</label>
+                  <Flex>
                     <Input
-                      mx='10px'
-                      id='word'
-                      name='word'
-                      value={word}
+                      id='name'
+                      name='name'
+                      value={name}
                       autoComplete='false'
+                      placeholder='시험지 제목'
                       onChange={(e) => onChange(e)}
                     />
-                    <label style={{ marginRight: '8px' }}>Mean:
-
-                    </label>
                     <Input
-                      mx='10px'
-                      id='mean'
-                      name='mean'
-                      value={mean}
+                      id='amount'
+                      name='amount'
+                      value={amount}
                       autoComplete='false'
+                      placeholder='몇 문제를 만들까요?'
                       onChange={(e) => onChange(e)}
                     />
                   </Flex>
-                  <Button width='100%' backgroundColor='green.200' color='white' onClick={() => saveWord()}>
-                    입력
-                  </Button>
+                  {
+                    createFinish ?
+                      <>
+                        <Flex justify='space-evenly'>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => setProblemList([])}>
+                            원본
+                          </Button>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => hideMean()}>
+                            단어 가리기
+                          </Button>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => hideWord()}>
+                            뜻 가리기
+                          </Button>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => retry()}>
+                            다시 생성하기
+                          </Button>
+                          <Button backgroundColor='blue.200' color='white' onClick={() => captureProblem()}>
+                            저장하기
+                          </Button>
+                        </Flex>
+                      </>
+                      :
+                      <Button backgroundColor='blue.200' color='white' onClick={() => createProblem()}>
+                        생성하기
+                      </Button>
+                  }
                 </>
+                :
+                btnComponent === 'insert' ?
+
+                  <>
+                    <Flex justify='space-evenly' align='center' mb='10px'>
+                      <label style={{ marginRight: '8px' }}>Word:</label>
+                      <Input
+                        mx='10px'
+                        id='word'
+                        name='word'
+                        value={word}
+                        autoComplete='false'
+                        onChange={(e) => onChange(e)}
+                      />
+                      <label style={{ marginRight: '8px' }}>Mean:
+
+                      </label>
+                      <Input
+                        mx='10px'
+                        id='mean'
+                        name='mean'
+                        value={mean}
+                        autoComplete='false'
+                        onChange={(e) => onChange(e)}
+                      />
+                    </Flex>
+                    <Button width='100%' backgroundColor='green.200' color='white' onClick={() => saveWord()}>
+                      입력
+                    </Button>
+                  </>
+                  :
+                  <Flex width='100%' justify='space-around' align='center'>
+                    <Box flex='1' >
+                      <Button width='100%' backgroundColor='yellow.100' onClick={() => setBtnComponent('insert')}>
+                        Insert
+                      </Button>
+                    </Box>
+                    <Box flex='1'>
+                      <Button width='100%' backgroundColor='yellow.100' onClick={() => setExcelModal(true)}>
+                        Excel
+                      </Button>
+                    </Box>
+                    <Box flex='1'>
+                      <Button width='100%' backgroundColor='yellow.100' onClick={() => setBtnComponent('create')}>
+                        Create
+                      </Button>
+                    </Box>
+                  </Flex>
             }
           </Card>
 
@@ -381,12 +437,15 @@ export default function WordDashboard() {
             {
               saveWordList.length > 0 ?
                 saveWordList.map((list, index) => (
-                  <Box
+                  <Card
                     key={index}
                     onClick={() => {
                       saveReview(list);
                     }}
                     mb="2px"
+                    backgroundColor='orange.100'
+                    width='90%'
+                    mx='auto'
                   >
                     <Flex justify='space-around'>
                       <Text>
@@ -399,7 +458,7 @@ export default function WordDashboard() {
                         {(list.createdAt).replace('T', ' ').substring(0, 19)}
                       </Text>
                     </Flex>
-                  </Box>
+                  </Card>
                 ))
                 :
                 <Text>
@@ -407,71 +466,6 @@ export default function WordDashboard() {
                 </Text>
             }
           </Card>
-          <Flex align='center' border='1px solid' borderColor='blue.200' justify='space-evenly'
-            position='fixed'
-            bottom='5%'
-            left='1%'
-            // width='100%'
-            direction='column'
-          >
-            {
-              problemModal ?
-                <>
-                  <Flex>
-                    <Input
-                      id='name'
-                      name='name'
-                      value={name}
-                      autoComplete='false'
-                      placeholder='시험지 제목'
-                      onChange={(e) => onChange(e)}
-                    />
-                    <Input
-                      id='amount'
-                      name='amount'
-                      value={amount}
-                      autoComplete='false'
-                      placeholder='몇 문제를 만들까요?'
-                      onChange={(e) => onChange(e)}
-                    />
-                  </Flex>
-                  {
-                    createFinish ?
-                      <>
-                        <Flex justify='space-evenly'>
-                          <Button backgroundColor='blue.200' color='white' onClick={() => setProblemList([])}>
-                            원본
-                          </Button>
-                          <Button backgroundColor='blue.200' color='white' onClick={() => hideMean()}>
-                            단어 가리기
-                          </Button>
-                          <Button backgroundColor='blue.200' color='white' onClick={() => hideWord()}>
-                            뜻 가리기
-                          </Button>
-                          <Button backgroundColor='blue.200' color='white' onClick={() => retry()}>
-                            다시 생성하기
-                          </Button>
-                        </Flex>
-                        <Flex>
-                          <Button backgroundColor='blue.200' color='white' onClick={() => captureProblem()}>
-                            저장하기
-                          </Button>
-                        </Flex>
-                      </>
-                      :
-                      <Button backgroundColor='blue.200' color='white' onClick={() => createProblem()}>
-                        생성하기
-                      </Button>
-                  }
-                </>
-                :
-                <>
-                  <Button backgroundColor='blue.200' color='white' onClick={() => setProblemModal(true)}>
-                    무작위 문제 생성
-                  </Button>
-                </>
-            }
-          </Flex>
         </div>
 
 
@@ -524,7 +518,7 @@ export default function WordDashboard() {
                       width="45%"
                       mb="2px"
                     >
-                      <Flex justify="space-between">
+                      <Flex justify="space-between" textColor='black'>
                         <Text width='20%' align='left'>
                           {index + 1}
                         </Text>
@@ -553,7 +547,7 @@ export default function WordDashboard() {
                       key={index}
                       mb="2px"
                     >
-                      <Flex justify='space-around'>
+                      <Flex justify='space-around' textColor='black'>
                         <Text width='20%' align='left' ml='10px'>
                           {index + 1}
                         </Text>
@@ -584,7 +578,7 @@ export default function WordDashboard() {
                           width="45%"
                           mb="2px"
                         >
-                          <Flex justify='space-between'>
+                          <Flex justify='space-between' textColor='black'>
                             <Text width='20%' align='left'>
                               {index + 1}
                             </Text>
@@ -605,7 +599,7 @@ export default function WordDashboard() {
                           key={index}
                           mb="2px"
                         >
-                          <Flex justify='space-around'>
+                          <Flex justify='space-around' textColor='black'>
                             <Text width='20%' align='left' ml='10px'>
                               {index + 1}
                             </Text>
