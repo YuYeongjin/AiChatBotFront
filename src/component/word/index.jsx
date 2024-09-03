@@ -10,7 +10,6 @@ import html2canvas from 'html2canvas';
 export default function WordDashboard() {
   //  modal
   const [excelModal, setExcelModal] = useState(false);
-  const [problemModal, setProblemModal] = useState(false);
   // status 
   const [changeWord, setChangeWord] = useState(false);
   const [createFinish, setCreateFinish] = useState(false);
@@ -21,7 +20,6 @@ export default function WordDashboard() {
   const [problemList, setProblemList] = useState([]);
   const [ownList, setOwnList] = useState([]);
   const [saveWordList, setSaveWordList] = useState([]);
-  const [saveWordInfo, setSaveWordInfo] = useState();
 
   const [btnComponent, setBtnComponent] = useState('');
   const [inputs, setInputs] = useState({
