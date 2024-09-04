@@ -447,7 +447,7 @@ export default function WordDashboard() {
                   >
                     <Flex justify='space-around'>
                       <Text>
-                        {index}
+                        {index + 1}
                       </Text>
                       <Text>
                         {list.name}
