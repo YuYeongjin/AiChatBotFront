@@ -101,6 +101,54 @@ export default function ExcelModal({ onClose, setChangeWord }) {
                   rows={10}
                   cols={50}
                 />
+                <Flex
+                  mt='auto'
+                  justify='space-around'
+                >
+                  {
+                    parsedWords.length > 0 ?
+                      <Button
+                        className='modalMainSmallBtn'
+                        _focus={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
+                        _active={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
+                        _hover={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
+                        shadow={shadow}
+                        backgroundColor='rgba(22, 204, 234, 1)'
+                        border='1px solid rgba(217, 217, 217, 1)'
+                        textColor='white'
+                        align='center'
+                        onClick={(e) => { saveWords(e) }}
+                      >
+                        < Text
+                          className='modalMainSmallBtnText'
+                          mx='auto'
+                        >
+                          저장하기
+                        </Text>
+                      </Button>
+                      :
+                      <Button
+                        className='modalMainSmallBtn'
+                        _focus={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
+                        _active={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
+                        _hover={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
+                        shadow={shadow}
+                        backgroundColor='rgba(22, 204, 234, 1)'
+                        border='1px solid rgba(217, 217, 217, 1)'
+                        textColor='white'
+                        align='center'
+                        onClick={() => { onClose() }}
+                      >
+                        < Text
+                          className='modalMainSmallBtnText'
+                          mx='auto'
+                        >
+                          닫기
+                        </Text>
+                      </Button>
+                  }
+
+                </Flex>
                 <Card>
                   {
                     parsedWords.length > 0 ?
@@ -128,54 +176,7 @@ export default function ExcelModal({ onClose, setChangeWord }) {
 
           </Flex>
 
-          <Flex
-            mt='auto'
-            justify='space-around'
-          >
-            {
-              parsedWords.length > 0 ?
-                <Button
-                  className='modalMainSmallBtn'
-                  _focus={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
-                  _active={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
-                  _hover={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
-                  shadow={shadow}
-                  backgroundColor='rgba(22, 204, 234, 1)'
-                  border='1px solid rgba(217, 217, 217, 1)'
-                  textColor='white'
-                  align='center'
-                  onClick={(e) => { saveWords(e) }}
-                >
-                  < Text
-                    className='modalMainSmallBtnText'
-                    mx='auto'
-                  >
-                    저장하기
-                  </Text>
-                </Button>
-                :
-                <Button
-                  className='modalMainSmallBtn'
-                  _focus={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
-                  _active={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
-                  _hover={{ backgroundColor: 'rgba(22, 204, 234, 1)' }}
-                  shadow={shadow}
-                  backgroundColor='rgba(22, 204, 234, 1)'
-                  border='1px solid rgba(217, 217, 217, 1)'
-                  textColor='white'
-                  align='center'
-                  onClick={() => { onClose() }}
-                >
-                  < Text
-                    className='modalMainSmallBtnText'
-                    mx='auto'
-                  >
-                    닫기
-                  </Text>
-                </Button>
-            }
 
-          </Flex>
 
         </ModalContent>
       </Modal>

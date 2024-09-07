@@ -214,27 +214,26 @@ export default function WordDashboard() {
   }
 
   function saveReview(saveWords) {
-    const jsonData = saveWords.wordList
-      .replace(/(\{|\[|\}|\,)\s*([a-zA-Z0-9_]+)\s*=/g, '$1"$2":')
-      .replace(/:\s*([^",}\]]+?)(?=,|\}|$)/g, ': "$1"')
-      .replace(/=(?=[^\"])/g, ':');
+    axios.post('/api/word/loadSaveList', {
+      list: saveWords
+    })
+      .then((response) => {
+        const list = [];
+        for (var i = 0; i < response.data.wordLists.length; i++) {
+          list.push({
+            "id": response.data.wordLists[i].id,
+            "word": response.data.wordLists[i].word,
+            "mean": response.data.wordLists[i].mean
+          });
+        }
+        setOwnList(list);
+        setCreateFinish(true);
 
-    const parsedData = JSON.parse(jsonData);
+      })
+      .catch((error) => {
+        alert(error);
+      })
 
-    // todo 
-    // 이름, 클릭시 바로 저장하기가 가능하게
-
-    const list = [];
-    for (var i = 0; i < parsedData.length; i++) {
-      list.push({
-        "id": parsedData[i].id,
-        "word": parsedData[i].word,
-        "mean": parsedData[i].mean
-      });
-    }
-
-    setOwnList(list);
-    setCreateFinish(true);
   }
 
   return (
@@ -471,6 +470,8 @@ export default function WordDashboard() {
           width="793.7px"
           height="1122.52px"
           border='1px solid gray'
+          textColor='black !important'
+          style={{ color: 'black !important' }}
           overflowY='auto'>
           <Box width='100%' borderBottom='1px solid'>
             <Text my='10px' align='center'>
