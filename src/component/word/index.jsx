@@ -212,10 +212,37 @@ export default function WordDashboard() {
       });
     });
   }
- ////////////// TODO =>>>>
-  function saveReviews(saveWords) {
+
+  function transformToJsonString(inputString) {
+    // 1. `{` 뒤에 `"` 추가
+    let result = inputString.replace(/{/g, '{"');
+
+    // 2. `=`의 앞뒤로 `"` 추가
+    result = result.replace(/(\w+)=/g, '"$1":');
+
+    // 3. `word`와 `mean` 값의 앞뒤에 `"` 추가
+    result = result.replace(/"(\w+)":([^,}]+)/g, '"$1":"$2"');
+    // result = result.replace(/("word":)([^,}]+)/g, '$1"$2"');
+    // result = result.replace(/("mean":)([^}]+)/g, '$1"$2"');
+
+
+    // 5. `}`의 앞에 `"` 추가
+    result = result.replace(/}/g, '"}');
+
+    result = result.replace(/""/g, '"');
+    // 6. 마지막 `=`를 `:`로 변경
+    result = result.replace(/=(?=[^,}])/g, ':');
+
+    return result;
+  }
+  ////////////// TODO =>>>>
+  function saveReview(saveWords) {
+    const value = transformToJsonString(saveWords.wordList);
+
+    console.log(value);
+
     axios.post('/api/word/loadSaveList', {
-      list: saveWords
+      list: transformToJsonString(saveWords.wordList)
     })
       .then((response) => {
         const list = [];
@@ -235,18 +262,10 @@ export default function WordDashboard() {
       })
 
   }
-  function fixJsonString(jsonString) {
-    // 속성 이름에 이중 인용부호 추가
-    let correctedString = jsonString
-      .replace(/(\w+)=/g, '"$1":') // 속성 이름에 이중 인용부호 추가
-      .replace(/:(?!\s*["\[{])([^,}\]]+)(?=[,}\]])/g, ': "$1"') // 문자열 값에 이중 인용부호 추가
-      .replace(/"mean":\s*([^,}\]]+)(?=[,}\]])/g, '"mean":"$1"'); // `mean` 필드의 값 감싸기
 
-    return correctedString;
-  }
-  function saveReview(saveWords) {
+  function saveReviews(saveWords) {
     const list = [];
-    const saveLists = fixJsonString(saveWords);
+    const saveLists = (saveWords);
     for (var i = 0; i < saveLists.length; i++) {
       console.log(saveLists[i]);
       list.push({
