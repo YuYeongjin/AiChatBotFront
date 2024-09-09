@@ -212,8 +212,8 @@ export default function WordDashboard() {
       });
     });
   }
-
-  function saveReview(saveWords) {
+ ////////////// TODO =>>>>
+  function saveReviews(saveWords) {
     axios.post('/api/word/loadSaveList', {
       list: saveWords
     })
@@ -235,7 +235,33 @@ export default function WordDashboard() {
       })
 
   }
+  function fixJsonString(jsonString) {
+    // 속성 이름에 이중 인용부호 추가
+    let correctedString = jsonString
+      .replace(/(\w+)=/g, '"$1":') // 속성 이름에 이중 인용부호 추가
+      .replace(/:(?!\s*["\[{])([^,}\]]+)(?=[,}\]])/g, ': "$1"') // 문자열 값에 이중 인용부호 추가
+      .replace(/"mean":\s*([^,}\]]+)(?=[,}\]])/g, '"mean":"$1"'); // `mean` 필드의 값 감싸기
 
+    return correctedString;
+  }
+  function saveReview(saveWords) {
+    const list = [];
+    const saveLists = fixJsonString(saveWords);
+    for (var i = 0; i < saveLists.length; i++) {
+      console.log(saveLists[i]);
+      list.push({
+        "id": saveLists[i].id,
+        "word": saveLists[i].word,
+        "mean": saveLists[i].mean
+      });
+    }
+    setOwnList(list);
+    setCreateFinish(true);
+
+
+  }
+
+  // ////////////////////////
   return (
 
     <>
