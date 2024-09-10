@@ -66,7 +66,6 @@ export default function WordDashboard() {
         for (var i = 0; i < response.data.wordLists.length; i++) {
           word.push({
             "id": response.data.wordLists[i].id,
-            "wordList": response.data.wordLists[i].wordList,
             "name": response.data.wordLists[i].name,
             "createdAt": response.data.wordLists[i].createdAt
           })
@@ -213,36 +212,12 @@ export default function WordDashboard() {
     });
   }
 
-  function transformToJsonString(inputString) {
-    // 1. `{` 뒤에 `"` 추가
-    let result = inputString.replace(/{/g, '{"');
-
-    // 2. `=`의 앞뒤로 `"` 추가
-    result = result.replace(/(\w+)=/g, '"$1":');
-
-    // 3. `word`와 `mean` 값의 앞뒤에 `"` 추가
-    result = result.replace(/"(\w+)":([^,}]+)/g, '"$1":"$2"');
-    // result = result.replace(/("word":)([^,}]+)/g, '$1"$2"');
-    // result = result.replace(/("mean":)([^}]+)/g, '$1"$2"');
-
-
-    // 5. `}`의 앞에 `"` 추가
-    result = result.replace(/}/g, '"}');
-
-    result = result.replace(/""/g, '"');
-    // 6. 마지막 `=`를 `:`로 변경
-    result = result.replace(/=(?=[^,}])/g, ':');
-
-    return result;
-  }
   ////////////// TODO =>>>>
   function saveReview(saveWords) {
-    const value = transformToJsonString(saveWords.wordList);
-
-    console.log(value);
+    console.log(saveWords.id);
 
     axios.post('/api/word/loadSaveList', {
-      list: transformToJsonString(saveWords.wordList)
+      list: saveWords.id
     })
       .then((response) => {
         const list = [];
@@ -263,23 +238,7 @@ export default function WordDashboard() {
 
   }
 
-  function saveReviews(saveWords) {
-    const list = [];
-    const saveLists = (saveWords);
-    for (var i = 0; i < saveLists.length; i++) {
-      console.log(saveLists[i]);
-      list.push({
-        "id": saveLists[i].id,
-        "word": saveLists[i].word,
-        "mean": saveLists[i].mean
-      });
-    }
-    setOwnList(list);
-    setCreateFinish(true);
-
-
-  }
-
+ 
   // ////////////////////////
   return (
 
