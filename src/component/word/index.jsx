@@ -212,10 +212,8 @@ export default function WordDashboard() {
     });
   }
 
-  ////////////// TODO =>>>>
   function saveReview(saveWords) {
-    console.log(saveWords.id);
-
+    setProblemList([]);
     axios.post('/api/word/loadSaveList', {
       list: saveWords.id
     })
@@ -233,13 +231,10 @@ export default function WordDashboard() {
 
       })
       .catch((error) => {
-        alert(error);
+        console.log(error);
       })
 
   }
-
- 
-  // ////////////////////////
   return (
 
     <>
