@@ -235,7 +235,7 @@ export default function WordDashboard() {
 
       })
       .catch((error) => {
-        alert(error);
+        console.log(error);
       })
 
   }
