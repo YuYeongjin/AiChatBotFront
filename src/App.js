@@ -9,6 +9,16 @@ import { Button } from "@chakra-ui/react";
 function App() {
   const [mainComponent, setMainComponent] = useState('');
 
+
+  window.addEventListener('unload', function (e) {
+    fetch('http://localhost:8000/api/use/close', { method: 'POST' })
+      .then(() => {
+        console.log('Application will be closed.');
+      })
+      .catch(err => console.error(err));
+  });
+
+
   return (
 
     mainComponent === 'word' ?

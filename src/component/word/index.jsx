@@ -6,10 +6,12 @@ import { Button, Card, Input, Text, Flex, Box, IconButton } from "@chakra-ui/rea
 import ExcelModal from "./modal/ExcelModal";
 import { BsFillPencilFill, BsFillXOctagonFill } from "react-icons/bs";
 import html2canvas from 'html2canvas';
+import PreviewModal from "./modal/PreviewModal";
 
 export default function WordDashboard() {
   //  modal
   const [excelModal, setExcelModal] = useState(false);
+  const [previewModal, setPreviewModal] = useState(false);
   // status 
   const [changeWord, setChangeWord] = useState(false);
   const [createFinish, setCreateFinish] = useState(false);
@@ -180,8 +182,7 @@ export default function WordDashboard() {
 
   const captureRef = useRef();
   function captureProblem() {
-    html2canvas(captureRef.current).then(canvas => {
-
+    html2canvas(captureRef.current, { scale: window.devicePixelRatio }).then(canvas => {
       axios.post('/api/word/saveList', {
         ownList: ownList,
         name: name
@@ -213,7 +214,10 @@ export default function WordDashboard() {
   }
 
   function saveReview(saveWords) {
-    setProblemList([]);
+    if (problemList) {
+      setProblemList([]);
+    }
+
     axios.post('/api/word/loadSaveList', {
       list: saveWords.id
     })
@@ -239,6 +243,7 @@ export default function WordDashboard() {
 
     <>
       {excelModal && <ExcelModal setChangeWord={setChangeWord} onClose={() => setExcelModal(false)} />}
+      {previewModal && <PreviewModal onClose={() => setPreviewModal(false)} problemList={problemList} ownList={ownList} name={name} />}
       <div style={{ display: 'flex' }}>
         <div style={{ width: '50vw' }}>
           <Flex justify='space-evenly' h='5vh' align='center'>
@@ -351,6 +356,11 @@ export default function WordDashboard() {
                         Create
                       </Button>
                     </Box>
+                    {/* <Box flex='1'>
+                      <Button width='100%' backgroundColor='yellow.100' onClick={() => setPreviewModal(true)}>
+                        Preview
+                      </Button>
+                    </Box> */}
                   </Flex>
             }
           </Card>
