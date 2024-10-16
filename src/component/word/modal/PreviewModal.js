@@ -1,7 +1,7 @@
 // React
 import React from 'react';
 // External Libraries
-import { Flex, ModalOverlay, Box, Text, useColorModeValue, Modal, ModalContent } from "@chakra-ui/react";
+import { Flex, ModalOverlay, Box, Text, Modal, ModalContent } from "@chakra-ui/react";
 // Components
 // Assets
 /**
@@ -10,13 +10,6 @@ import { Flex, ModalOverlay, Box, Text, useColorModeValue, Modal, ModalContent }
  *  - titleText           : 모달버튼 상단 텍스트
  */
 export default function PreviewModal({ onClose, problemList, ownList, name }) {
-
-  const shadow = useColorModeValue(
-    "14px 17px 40px 4px rgba(112, 144, 176, 0.18)",
-    "14px 17px 40px 4px rgba(112, 144, 176, 0.06)"
-  );
-
-
 
   return (
     <div className='modal'>

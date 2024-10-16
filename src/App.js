@@ -45,7 +45,7 @@ function App() {
                 <Button style={{ width: '50%' }}
                   backgroundColor='gray.400'
                   color='white'
-                // onClick={() => setMainComponent('chat')}
+                  onClick={() => setMainComponent('chat')}
                 >
                   챗봇 (개발중)
                 </Button>
