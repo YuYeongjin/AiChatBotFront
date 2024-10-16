@@ -1,7 +1,9 @@
 // React
 import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 // External Libraries
 import axios from 'axios';
+import { Box, Flex, Button, Input } from "@chakra-ui/react";
 import { Box, Flex, Button, Input } from "@chakra-ui/react";
 // Components
 
@@ -16,10 +18,29 @@ export default function ChatDashboard() {
       chat: chat,
     }).then((response) => {
       setReturnChat(response.data.text);
+      setReturnChat(response.data.text);
     })
       .catch((error) => {
         alert(error);
       })
+  }
+  useEffect(() => {
+    axios.post("/api/chatbot/getChat")
+      .then((response) => {
+
+      })
+      .catch((error) => {
+
+      })
+
+  }, [])
+
+  function onChange(e) {
+    const { value, name } = e.target;
+    setInputs({
+      ...inputs,
+      [name]: value,
+    });
   }
   useEffect(() => {
     axios.post("/api/chatbot/getChat")
