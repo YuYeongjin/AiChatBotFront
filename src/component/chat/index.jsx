@@ -1,9 +1,7 @@
 // React
 import React, { useState, useEffect } from "react";
-import React, { useState, useEffect } from "react";
 // External Libraries
 import axios from 'axios';
-import { Box, Flex, Button, Input } from "@chakra-ui/react";
 import { Box, Flex, Button, Input } from "@chakra-ui/react";
 // Components
 
