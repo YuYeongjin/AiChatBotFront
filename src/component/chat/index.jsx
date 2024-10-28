@@ -15,8 +15,7 @@ export default function ChatDashboard() {
     axios.post("/api/chatbot/message", {
       chat: chat,
     }).then((response) => {
-      setReturnChat(response.data.text);
-      setReturnChat(response.data.text);
+      setReturnChat(response.data.result);
     })
       .catch((error) => {
         alert(error);
